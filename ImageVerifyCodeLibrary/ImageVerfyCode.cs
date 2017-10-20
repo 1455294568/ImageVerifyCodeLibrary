@@ -10,64 +10,62 @@ namespace ImageVerifyCodeLibrary
     public class ImageVerfyCode
     {
         string code;
-        Random random;
-        int width = 91;
-        int height = 45;
+        Random random = new Random(DateTime.Now.Millisecond);
+        int width = 70;
+        int height = 30;
         public Image ImageCreate()
         {
             code = "";
-            Image image = new Bitmap(width, height);
-            Graphics g = Graphics.FromImage(image);
-            Font f;
+            Font font;
+            Image img = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(img);
+            SolidBrush brush = new SolidBrush(Color.Black);
+            g.FillRectangle(brush, 0, 0, width, height);
             Array array = Enum.GetValues(typeof(FontStyle));
-            for (int i = 1; i <= 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                random = new Random(DateTime.UtcNow.Millisecond * i + i / i);
-                int n = random.Next(2);
-                if (n == 1)
+                if (random.Next(2) == 0)
                 {
-                    random = new Random(DateTime.UtcNow.Millisecond * i + i);
-                    code += (char)random.Next(65, 88);
+                    if (random.Next(2) == 0)
+                    {
+                        code += (char)random.Next(65, 91);
+                    }
+                    else
+                    {
+                        code += (char)random.Next(97, 123);
+                    }
                 }
                 else
                 {
-                    random = new Random(DateTime.UtcNow.Millisecond / i + i);
-                    code += random.Next(0, 9).ToString();
+                    code += random.Next(0, 10).ToString();
                 }
             }
-            Brush b = new SolidBrush(Color.Black);
-            g.FillRectangle(b, 0, 0, width, height);
-            b = new SolidBrush(Color.White);
-            Pen p = new Pen(Color.White, 2);
-
+            Console.WriteLine(code);
+            brush = new SolidBrush(Color.White);
             int dis = 0;
-            foreach (char a in code)
+            foreach (char c in code)
             {
-                random = new Random(DateTime.UtcNow.Millisecond + dis);
-                f = new Font("Arial", 16, (FontStyle)array.GetValue(random.Next(array.Length)));
-                g.DrawString(a.ToString(), f, b, dis, 20);
+                font = new Font("Aria", 16, (FontStyle)random.Next(array.Length));
+                g.DrawString(c.ToString(), font, brush, new Point(dis, 5));
                 dis += 13;
             }
-
-            for (int i = 1; i <= 16; i++)
+            Pen pen = new Pen(Color.White, 2);
+            for (int i = 0; i < 6; i++)
             {
-                random = new Random(DateTime.UtcNow.Millisecond * i);
-                int x = random.Next(10, width);
-                int y = random.Next(10, height);
-                g.DrawLine(p, new Point(x, y), new Point(x + 1, y + 1));
+                g.DrawLine(pen, new Point(random.Next(height), random.Next(width)), new Point(random.Next(height), random.Next(width)));
+            }
+            pen.Width = 1;
+            for (int i = 0; i < 20; i++)
+            {
+                int x = random.Next(height);
+                int y = random.Next(width);
+                g.DrawLine(pen, new Point(x, y), new Point(x + 1, y + 1));
             }
 
-            for (int i = 1; i <= 3; i++)
-            {
-                random = new Random(DateTime.UtcNow.Millisecond * i);
-                int x = random.Next(0, width);
-                int y = random.Next(0, height);
-                g.DrawLine(p, new Point(x, y), new Point(x + y, y + x));
-            }
             g.Dispose();
-            p.Dispose();
-            b.Dispose();
-            return image;
+            pen.Dispose();
+
+            return img;
         }
 
         public String Getcode()
